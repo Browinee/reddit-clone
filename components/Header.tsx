@@ -49,6 +49,16 @@ function Header() {
       <div className="ml-5 flex items-center lg:hidden">
         <MenuIcon className="icon" />
       </div>
+      <div className="hidden lg:flex items-center space-x-2  border border-gray-100 p-2 cursor-pointer">
+        <div className="relative h-5 w-5 ">
+          <Image
+            src="https://links.papareact.com/23l"
+            layout="fill"
+            objectFit="contain"
+          />
+        </div>
+        <p className="text-gray-400">Sign In</p>
+      </div>
     </div>
   );
 }
