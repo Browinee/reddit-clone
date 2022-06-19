@@ -65,9 +65,12 @@ function Header() {
           />
         </div>
         {session && (
-          <div className="flex-1 text-xs">
-            <p className="truncate">{session?.user?.name}</p>
-          </div>
+          <>
+            <div className="flex-1 text-xs">
+              <p className="truncate">{session?.user?.name}</p>
+            </div>
+            <ChevronDownIcon className="h-5 flex-shrink-0 text-gray-400" />
+          </>
         )}
 
         <p className="text-gray-400">{session ? "" : "Sign In"}</p>
