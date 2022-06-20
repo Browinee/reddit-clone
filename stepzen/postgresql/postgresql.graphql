@@ -17,7 +17,7 @@ type Post {
   created_at: DateTime
   id: ID!
   image: String
-  subreddit: Subreddit
+  subreddit: [Subreddit]
     @materializer(
       query: "getSubreddit"
       arguments: [{ name: "id", field: "subreddit_id" }]

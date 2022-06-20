@@ -10,4 +10,7 @@
   .vote-button {
     @apply h-6 w-6 hover:bg-gray-200 p-1 rounded-md
   }
+  .post-button {
+    @apply flex items-center space-x-1 text-sm font-semibold p-2 cursor-pointer rounded-sm hover:bg-gray-100
+  }
 }
