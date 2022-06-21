@@ -1,4 +1,4 @@
-interface Comments {
+interface Comment {
   created_at: string;
   id: number;
   post_id: number;
@@ -29,6 +29,6 @@ interface Post {
   title: string;
   username: string;
   voteList: Vote[];
-  commentList: Comments[];
+  commentList: Comment[];
   subreddit: Subreddit[];
 }
