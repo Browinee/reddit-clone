@@ -14,7 +14,7 @@ interface PostFormProps {
   subreddit: string;
 }
 
-function PostBox() {
+function PostBox({ subreddit }: { subreddit?: string }) {
   const { data: session } = useSession();
   const [addPost] = useMutation(ADD_POST, {
     refetchQueries: [{ query: GET_ALL_POSTS }, "getPostList"],
@@ -40,11 +40,12 @@ function PostBox() {
 
   const onSubmit: SubmitHandler<PostFormProps> = async (formData) => {
     const notification = toast.loading("Creating post...");
+
     try {
       const {
         data: { getSubredditListByTopic },
       } = await getSubredditListByTopicQuery({
-        variables: { topic: formData.subreddit },
+        variables: { topic: subreddit || formData.subreddit },
       });
       console.log("getSubredditListByTopic", getSubredditListByTopic);
 
@@ -65,7 +66,7 @@ function PostBox() {
           variables: {
             body: formData.body,
             image: formData.image || "",
-            subreddit_id: newSubreddit.id,
+            subreddit_id: subreddit || newSubreddit.id,
             title: formData.title,
             username: session?.user?.name,
           },
@@ -90,6 +91,8 @@ function PostBox() {
       resetForm();
       toast.success("New Post Created!", { id: notification });
     } catch (e) {
+      console.log("e", e);
+
       toast.error("Whoops something went wrong when creating post.", {
         id: notification,
       });
@@ -111,7 +114,11 @@ function PostBox() {
           type="text"
           disabled={!session}
           placeholder={
-            session ? "Create a post by entering a title" : "Sign in to post"
+            session
+              ? subreddit
+                ? `Create a post in r/${subreddit}`
+                : "Create a post by entering a title"
+              : "Sign in to post"
           }
         />
         <PhotographIcon
@@ -133,15 +140,17 @@ function PostBox() {
               {...register("body")}
             />
           </div>
-          <div className="flex items-center px-2 ">
-            <p className="min-w-[90px]">Subreddit:</p>
-            <input
-              className="outline-none flex-1 p-2 m-2 bg-blue-50 "
-              type="text"
-              placeholder="i.e.reactjs"
-              {...register("subreddit", { required: true })}
-            />
-          </div>
+          {!subreddit && (
+            <div className="flex items-center px-2 ">
+              <p className="min-w-[90px]">Subreddit:</p>
+              <input
+                className="outline-none flex-1 p-2 m-2 bg-blue-50 "
+                type="text"
+                placeholder="i.e.reactjs"
+                {...register("subreddit", { required: true })}
+              />
+            </div>
+          )}
           {isImageBoxOpen && (
             <div className="flex items-center px-2 ">
               <p className="min-w-[90px]">Image URL:</p>
