@@ -19,7 +19,7 @@ type Post {
   image: String
   subreddit: [Subreddit]
     @materializer(
-      query: "getSubreddit"
+      query: "getSubredditList"
       arguments: [{ name: "id", field: "subreddit_id" }]
     )
   subreddit_id: ID
@@ -70,7 +70,10 @@ type Query {
     @dbquery(
       type: "postgresql"
       schema: "public"
-      table: "post"
+      query: """
+      select * from "post"
+      order by "post"."created_at" desc
+      """
       configuration: "postgresql_config"
     )
   getPost(id: ID!): Post

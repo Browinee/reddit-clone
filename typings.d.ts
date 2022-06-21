@@ -1,5 +1,3 @@
-interface Post {}
-
 interface Comments {
   created_at: string;
   id: number;

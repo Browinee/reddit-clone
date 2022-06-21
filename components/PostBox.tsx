@@ -5,7 +5,7 @@ import Avatar from "./Avatar";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ADD_POST, ADD_SUBREDDIT } from "../graphql/mutations";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { GET_SUBREDDIT_LIST_BY_TOPIC } from "../graphql/queries";
+import { GET_ALL_POSTS, GET_SUBREDDIT_LIST_BY_TOPIC } from "../graphql/queries";
 import toast from "react-hot-toast";
 interface PostFormProps {
   title: string;
@@ -16,7 +16,9 @@ interface PostFormProps {
 
 function PostBox() {
   const { data: session } = useSession();
-  const [addPost] = useMutation(ADD_POST);
+  const [addPost] = useMutation(ADD_POST, {
+    refetchQueries: [{ query: GET_ALL_POSTS }, "getPostList"],
+  });
   const [addSubreddit] = useMutation(ADD_SUBREDDIT);
   const [getSubredditListByTopicQuery] = useLazyQuery(
     GET_SUBREDDIT_LIST_BY_TOPIC
