@@ -29,7 +29,7 @@ function PostBox({ subreddit }: { subreddit?: string }) {
     watch,
     setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm<PostFormProps>();
 
   const resetForm = useCallback(() => {
     setValue("body", "");
@@ -38,7 +38,7 @@ function PostBox({ subreddit }: { subreddit?: string }) {
     setValue("subreddit", "");
   }, [setValue]);
 
-  const onSubmit: SubmitHandler<PostFormProps> = async (formData) => {
+  const onSubmit = async (formData: PostFormProps) => {
     const notification = toast.loading("Creating post...");
 
     try {
@@ -47,7 +47,6 @@ function PostBox({ subreddit }: { subreddit?: string }) {
       } = await getSubredditListByTopicQuery({
         variables: { topic: subreddit || formData.subreddit },
       });
-      console.log("getSubredditListByTopic", getSubredditListByTopic);
 
       // NOTE: check if subreddit exist
       if (!getSubredditListByTopic.length) {
@@ -58,7 +57,6 @@ function PostBox({ subreddit }: { subreddit?: string }) {
             topic: formData.subreddit,
           },
         });
-        console.log("newSubreddit", newSubreddit);
 
         const {
           data: { insertPost: newPost },
@@ -71,7 +69,6 @@ function PostBox({ subreddit }: { subreddit?: string }) {
             username: session?.user?.name,
           },
         });
-        console.log("newPost", newPost);
       } else {
         // NOTE: use existing subreddit
         const {
@@ -85,7 +82,6 @@ function PostBox({ subreddit }: { subreddit?: string }) {
             username: session?.user?.name,
           },
         });
-        console.log("newPost with existing id", newPost);
       }
       // NOTE: after the post was added.
       resetForm();
