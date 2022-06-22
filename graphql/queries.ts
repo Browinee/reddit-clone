@@ -76,6 +76,16 @@ export const GET_SUBREDDIT_LIST_BY_TOPIC = gql`
   }
 `;
 
+export const GET_SUBREDDIT_LIST_WITH_LIMIT = gql`
+  query getSubredditListLimit($limit: Int!) {
+    getSubredditListLimit(limit: $limit) {
+      id
+      topic
+      created_at
+    }
+  }
+`;
+
 export const GET_POST_BY_ID = gql`
   query getPostById($postId: ID!) {
     getPost(id: $postId) {

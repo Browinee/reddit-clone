@@ -11,18 +11,81 @@ import React from "react";
 import Avatar from "./Avatar";
 import TimeAgo from "react-timeago";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
+import { ADD_VOTE } from "../graphql/mutations";
+import { useMutation } from "@apollo/client";
+import { GET_POST_BY_ID } from "../graphql/queries";
 
 interface PostProps {
   post: Post;
 }
+const displayVotes = (voteLists: Vote[]) => {
+  return !voteLists.length
+    ? 0
+    : voteLists.reduce(
+        (total, vote) => (vote.upvote ? (total += 1) : (total -= 1)),
+        0
+      );
+};
+
 function Post({ post }: PostProps) {
+  console.log("post", post);
+  const { data: session } = useSession();
+  const userVoteInfo = post.voteList.find(
+    (vote) => vote.username === session?.user?.name
+  );
+  const [addVote] = useMutation(ADD_VOTE, {
+    refetchQueries: [
+      { query: GET_POST_BY_ID, variables: { postId: post.id } },
+      "getPost",
+    ],
+  });
+
+  // vote
+  // unlogin  disabled with gray
+  // login show user's status
+  // user mgith contain or not contina
+  const upVote = async (isUpvote: boolean) => {
+    if (!session) {
+      toast("❗ You'll need to sign in to Vote!");
+      return;
+    }
+    // NOTE: new Upvote is the same with the original isUpvote
+    if (userVoteInfo && userVoteInfo.upvote === isUpvote) {
+      return;
+    }
+    //NOTE: should differentiate two usecase
+    // add new vote or update existing vote
+    const {
+      data: { insertVote: newVote },
+    } = await addVote({
+      variables: {
+        post_id: post.id,
+        username: session.user?.name,
+        upvote: isUpvote,
+      },
+    });
+  };
   return (
     <Link href={`/post/${post.id}`}>
       <div className="flex cursor-pointer border border-gray-300  bg-white shadow-sm  hover:border hover:border-gray-400">
         <div className="p-4 flex flex-col items-center  justify-start space-y-1 rounded-l-md bg-gray-50 text-gray-400">
-          <ArrowUpIcon className="vote-button hover:text-red-400" />
-          <p className="text-black font-bold text-xs">0</p>
-          <ArrowDownIcon className="hover:text-blue-400" />
+          <ArrowUpIcon
+            onClick={() => upVote(true)}
+            className={`vote-button hover:text-red-400 ${
+              session && userVoteInfo?.upvote && "text-red-400"
+            }`}
+          />
+          <p className="text-black font-bold text-xs">
+            {displayVotes(post.voteList)}
+          </p>
+          <ArrowDownIcon
+            onClick={() => upVote(false)}
+            className={`vote-button hover:text-blue-400 ${
+              session && userVoteInfo && !userVoteInfo.upvote && "text-blue-400"
+            }`}
+          />
         </div>
         <div className="p-3 pb-1">
           {/* Header */}
